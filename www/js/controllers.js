@@ -144,84 +144,116 @@ angular.module('conFusion.controllers', [])
 
 }])
 
-.controller('FeedbackController', ['$scope', 'feedbackFactory', function ($scope, feedbackFactory) {
+.controller('FeedbackController', ['$scope', 'feedbackFactory',
+    function ($scope, feedbackFactory) {
 
-    $scope.sendFeedback = function () {
+        $scope.sendFeedback = function () {
 
-        console.log($scope.feedback);
-
-        if ($scope.feedback.agree && ($scope.feedback.mychannel === "")) {
-            $scope.invalidChannelSelection = true;
-            console.log('incorrect');
-        } else {
-            $scope.invalidChannelSelection = false;
-            feedbackFactory.save($scope.feedback);
-            $scope.feedback = {
-                mychannel: "",
-                firstName: "",
-                lastName: "",
-                agree: false,
-                email: ""
-            };
-            $scope.feedback.mychannel = "";
-            $scope.feedbackForm.$setPristine();
             console.log($scope.feedback);
-        }
-    };
-}])
 
-.controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'baseURL', function ($scope, $stateParams, menuFactory, baseURL) {
-
-    $scope.dish = {};
-    $scope.showDish = false;
-    $scope.message = "Loading ...";
-    $scope.baseURL = baseURL;
-
-    $scope.dish = menuFactory.getDishes().get({
-            id: parseInt($stateParams.id, 10)
-        })
-        .$promise.then(
-            function (response) {
-                $scope.dish = response;
-                $scope.showDish = true;
-            },
-            function (response) {
-                $scope.message = "Error: " + response.status + " " + response.statusText;
+            if ($scope.feedback.agree && ($scope.feedback.mychannel === "")) {
+                $scope.invalidChannelSelection = true;
+                console.log('incorrect');
+            } else {
+                $scope.invalidChannelSelection = false;
+                feedbackFactory.save($scope.feedback);
+                $scope.feedback = {
+                    mychannel: "",
+                    firstName: "",
+                    lastName: "",
+                    agree: false,
+                    email: ""
+                };
+                $scope.feedback.mychannel = "";
+                $scope.feedbackForm.$setPristine();
+                console.log($scope.feedback);
             }
-        );
+        };
+    }
+])
 
+.controller('DishDetailController', ['$scope', '$stateParams', 'menuFactory', 'baseURL', '$ionicPopover', 'favoriteFactory', '$ionicModal',
+    function ($scope, $stateParams, menuFactory, baseURL, $ionicPopover, favoriteFactory, $ionicModal) {
 
-}])
+        $scope.dish = {};
+        $scope.showDish = false;
+        $scope.message = "Loading ...";
+        $scope.baseURL = baseURL;
 
-.controller('DishCommentController', ['$scope', 'menuFactory', function ($scope, menuFactory) {
+        $scope.dish = menuFactory.getDishes().get({
+                id: parseInt($stateParams.id, 10)
+            })
+            .$promise.then(
+                function (response) {
+                    $scope.dish = response;
+                    $scope.showDish = true;
+                },
+                function (response) {
+                    $scope.message = "Error: " + response.status + " " + response.statusText;
+                }
+            );
 
-    $scope.mycomment = {
-        rating: 5,
-        comment: "",
-        author: "",
-        date: ""
-    };
+        $ionicPopover.fromTemplateUrl('templates/dish-detail-popover.html', {
+            scope: $scope
+        }).then(function (popover) {
+            $scope.popover = popover;
+        });
 
-    $scope.submitComment = function () {
+        $scope.addToFavorites = function () {
+            favoriteFactory.addToFavorites($scope.dish);
+            $scope.popover.hide();
+        };
 
-        $scope.mycomment.date = new Date().toISOString();
-        console.log($scope.mycomment);
+        $scope.openPopover = function ($event) {
+            $scope.popover.show($event);
+        };
 
-        $scope.dish.comments.push($scope.mycomment);
-        menuFactory.getDishes().update({
-            id: $scope.dish.id
-        }, $scope.dish);
-
-        $scope.commentForm.$setPristine();
+        $ionicModal.fromTemplateUrl('templates/comment.html', {
+            scope: $scope
+        }).then(function (modal) {
+            $scope.modal = modal;
+        });
 
         $scope.mycomment = {
-            rating: 5,
+            rating: "5",
             comment: "",
             author: "",
             date: ""
         };
-    };
-}])
+
+        $scope.openCommentModal = function () {
+            $scope.popover.hide();
+            $scope.modal.show();
+        };
+
+        $scope.closeCommentModal = function () {
+            $scope.modal.hide();
+        };
+
+        $scope.submitComment = function () {
+
+            $scope.mycomment.date = new Date().toISOString();
+
+            $scope.dish.comments.push($scope.mycomment);
+
+            menuFactory.getDishes().update({
+                id: $scope.dish.id
+            }, $scope.dish);
+
+            // $scope.commentForm.$setPristine();
+
+            $scope.mycomment = {
+                rating: "5",
+                comment: "",
+                author: "",
+                date: ""
+            };
+
+            $scope.modal.hide();
+        };
+
+    }
+])
 
 // implement the IndexController and About Controller here
 
