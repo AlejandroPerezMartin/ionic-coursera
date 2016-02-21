@@ -1,6 +1,6 @@
 angular.module('conFusion.controllers', [])
 
-.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $localStorage) {
+.controller('AppCtrl', function ($scope, $ionicModal, $timeout, $localStorage, $ionicPlatform, $cordovaCamera) {
 
     // With the new view caching in Ionic, Controllers are only called
     // when they are recreated or on app start, instead of every page change.
@@ -11,6 +11,7 @@ angular.module('conFusion.controllers', [])
 
     // Form data for the login modal
     $scope.loginData = $localStorage.getObject('userinfo', '{}');
+    $scope.registration = {};
 
     // Create the login modal that we will use later
     $ionicModal.fromTemplateUrl('templates/login.html', {
@@ -72,18 +73,15 @@ angular.module('conFusion.controllers', [])
 
 })
 
-.controller('MenuController', ['$scope', 'baseURL', '$ionicListDelegate', 'dishes',
-    function ($scope, baseURL, $ionicListDelegate, dishes) {
+.controller('MenuController', ['$scope', 'dishes', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPlatform', '$cordovaLocalNotification', '$cordovaToast',
+    function ($scope, dishes, favoriteFactory, baseURL, $ionicListDelegate, $ionicPlatform, $cordovaLocalNotification, $cordovaToast) {
 
         $scope.tab = 1;
         $scope.filtText = '';
-        $scope.showDetails = false;
-        $scope.showMenu = false;
-        $scope.message = "Loading ...";
         $scope.baseURL = baseURL;
+        $scope.showDetails = false;
 
         $scope.dishes = dishes;
-        $scope.showMenu = true;
 
         $scope.select = function (setTab) {
             $scope.tab = setTab;
@@ -108,9 +106,30 @@ angular.module('conFusion.controllers', [])
         };
 
         $scope.addFavorite = function (index) {
-            console.log("index is " + index);
             favoriteFactory.addToFavorites(index);
             $ionicListDelegate.closeOptionButtons();
+
+            console.log("Added favoriteee!");
+            $ionicPlatform.ready(function () {
+                $cordovaLocalNotification.schedule({
+                    id: 1,
+                    title: "Added Favorite",
+                    text: $scope.dishes[index].name
+                }).then(function () {
+                        console.log('Added Favorite ' + $scope.dishes[index].name);
+                    },
+                    function () {
+                        console.log('Failed to add Notification');
+                    });
+
+                $cordovaToast
+                    .show('Added Favorite ' + $scope.dishes[index].name, 'long', 'center')
+                    .then(function (success) {
+                        // success
+                    }, function (error) {
+                        // error
+                    });
+            });
         };
 
     }
