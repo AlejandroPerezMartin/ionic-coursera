@@ -15,7 +15,7 @@
                     <span style="font-size:75%">
                         {{dish.price | currency}}
                     </span>
-                    <span class="badge badge-assertive">
+                    <span ng-show="dish.label" class="badge badge-assertive">
                         {{dish.label}}
                     </span>
                 </h2>

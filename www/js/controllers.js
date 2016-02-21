@@ -237,12 +237,10 @@ angular.module('conFusion.controllers', [])
 
 // implement the IndexController and About Controller here
 
-.controller('IndexController', ['$scope', 'dish', 'promotion', 'corporateFactory', 'baseURL', function ($scope, dish, promotion, corporateFactory, baseURL) {
+.controller('IndexController', ['$scope', 'dish', 'promotion', 'corporate', 'baseURL', function ($scope, dish, promotion, corporate, baseURL) {
 
     $scope.baseURL = baseURL;
-    $scope.leader = corporateFactory.get({
-        id: 3
-    });
+    $scope.leader = corporate;
 
     $scope.showDish = false;
     $scope.message = "Loading ...";
@@ -258,21 +256,19 @@ angular.module('conFusion.controllers', [])
 }])
 
 .controller('AboutController', ['$scope', 'corporate', 'baseURL', function ($scope, corporate, baseURL) {
-
     $scope.baseURL = baseURL;
     $scope.leaders = corporate;
-
 }])
 
 .controller('FavoritesController', ['$scope', 'dishes', 'favorites', 'favoriteFactory', 'baseURL', '$ionicListDelegate', '$ionicPopup', '$ionicLoading', '$timeout',
     function ($scope, dishes, favorites, favoriteFactory, baseURL, $ionicListDelegate, $ionicPopup, $ionicLoading, $timeout) {
 
-        // $ionicLoading.show({
-        //     template: '<ion-spinner></ion-spinner> Loading...'
-        // });
-
         $scope.baseURL = baseURL;
         $scope.shouldShowDelete = false;
+
+        //$ionicLoading.show({
+        //    template: '<ion-spinner></ion-spinner> Loading'
+        //});
 
         $scope.favorites = favorites;
 
@@ -282,21 +278,22 @@ angular.module('conFusion.controllers', [])
             $scope.shouldShowDelete = !$scope.shouldShowDelete;
             console.log($scope.shouldShowDelete);
         };
-
         $scope.deleteFavorite = function (index) {
-
             var confirmPopup = $ionicPopup.confirm({
-                title: 'Delete from favorites',
-                template: 'Are you sure you want to delete this from your favorites list?'
+                title: 'Confirm Delete',
+                templates: 'Are you sure you want to delete this item?'
             });
 
             confirmPopup.then(function (res) {
                 if (res) {
+                    console.log('Ok to delete');
                     favoriteFactory.deleteFromFavorites(index);
                 } else {
-                    $scope.shouldShowDelete = false;
+                    console.log('Canceled delete');
                 }
             });
+
+            $scope.shouldShowDelete = false;
         };
     }
 ])
@@ -313,6 +310,6 @@ angular.module('conFusion.controllers', [])
         return out;
 
     };
-});
+})
 
 ;

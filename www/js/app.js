@@ -69,6 +69,11 @@ angular.module('conFusion', ['ionic', 'conFusion.controllers', 'conFusion.servic
             return promotionFactory.get({
               id: 0
             });
+          }],
+          corporate: ['corporateFactory', function (corporateFactory) {
+            return corporateFactory.get({
+              id: 3
+            });
           }]
         }
       }
@@ -142,7 +147,7 @@ angular.module('conFusion', ['ionic', 'conFusion.controllers', 'conFusion.servic
             return menuFactory.query();
           }],
           favorites: ['favoriteFactory', function (favoriteFactory) {
-            return favoriteFactory.query();
+            return favoriteFactory.getFavorites();
           }]
         }
       }
