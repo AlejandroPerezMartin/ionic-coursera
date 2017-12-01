@@ -1,6 +1,8 @@
 Ionic App Base
 =====================
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/AlejandroPerezMartin/ionic-coursera.svg)](https://greenkeeper.io/)
+
 A starting project for Ionic that optionally supports using custom SCSS.
 
 ## Using this project
